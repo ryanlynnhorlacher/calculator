@@ -1,5 +1,10 @@
+@storage = []
+@memory = []
+@store = []
+
 def get_input
-	puts "--Welcome to Ruby Calclulator"
+	puts "--Welcome to Ruby Calc--"
+	puts "Use clear, history, store, recall, or quit at anytime."
 	puts "Enter first number"
 	input = []
 	while
@@ -8,53 +13,76 @@ def get_input
 		when /^[+-]?[0-9]*\.?[0-9]+$/
 			break
 		else
+			alt_commands(input[0])
 			puts "Please enter a number"
 		end
 	end
-	puts "Enter an operator"
-	while
-  	input[1] = gets.strip
-  	case input[1]
-  	when "*", "+", "-", "/", "**", "%"
-      break
-    else
-    	puts "Please use a valid operator"
-    end
-  end
-  puts "Enter second number"
-  while
-  	input[2] = gets.strip
-	  case input[2]
-	  when /^[+-]?[0-9]*\.?[0-9]+$/	
-	  	break
-	  else
-	  	puts "Please enter a number"
+	while true
+		puts "Enter an operator"
+		while true
+	  	input[1] = gets.strip
+	  	case input[1]
+	  	when "*", "+", "-", "/", "**", "%"
+	      break
+	    else
+	    	alt_commands(input[1])
+	    	puts "Please use a valid operator"
+	    end
 	  end
-end
-  return input
-end
-
-def calculate(get_input)
-	output = get_input[0].to_f.send(get_input[1], get_input[2].to_f)
-	puts "#{get_input[0]} #{get_input[1]} #{get_input[2]} = #{output.round(6)}"
-	puts "Play again? (y/n)"
-end
-
-def play_again
-	puts "Would you like to play again?"
-	again = gets.strip
-	case again
-	when "y"
-	when "no"
-		quit
+	  puts "Enter another number"
+	  while true
+	  	input[2] = gets.strip
+		  case input[2]
+		  when /^[+-]?[0-9]*\.?[0-9]+$/	
+		  	break
+		  else
+		  	alt_commands(input[2])
+		  	puts "Please enter a number"
+		  end
+		end
+		output = input[0].to_f.send(input[1], input[2].to_f)
+		@store[0] = "#{input[0]} #{input[1]} #{input[2]} = #{output.round(6)}"
+		puts @store[0]
+		@storage <<@store[0]
+		input[0] = output
 	end
 end
 
-def quit
-	exit(0)
+def alt_commands(commands)
+	case commands.downcase
+	when "menu"
+		puts "clear: clears all memory and restarts calc"
+		puts "history: shows recent history"
+		puts "store: stores most recent output"
+		puts "recall: recalls most recent output"
+		puts "quit: exits the calc"
+	when "clear"
+		puts "CLEARED"
+		get_input
+	when "history"
+		if @storage.empty? 
+			puts "No history to show"
+		else
+			puts @storage
+		end
+	when "store"
+		if @store.empty?
+			 puts "Nothing to store"
+		else
+			@memory[0] = @store[0]
+			puts "OUTPUT STORED: #{@memory}"
+		end
+	when "recall"
+		if @memory.empty?
+			puts "Nothing to recall"
+		else
+		puts "STORED VALUE #{@memory}"
+		end
+	when "quit"
+		puts "Thank you for using Ruby Calc"
+		exit(0)
+	end
 end
-		
-while true
-	calculate(get_input)
-	play_again
-end
+
+
+get_input
